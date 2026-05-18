@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md"; 
+import { authClient } from "@/lib/auth-client";
+import { MdVisibility, MdVisibilityOff, MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -24,64 +25,83 @@ export default function LoginForm() {
     setLoading(true);
     setError("");
 
-    const { error } = await signIn.email({
+    const { error: loginError } = await authClient.signIn.email({
       email: form.email,
       password: form.password,
       callbackURL: "/",
     });
 
-    if (error) {
-      setError(error.message || "Login failed. Please try again.");
+    if (loginError) {
+      const msg = loginError.message || "Login failed";
+      setError(msg);
+      toast.error(msg, { duration: 3000 });
       setLoading(false);
       return;
     }
 
+    toast.success("Login Successful!", { duration: 3000 });
+    setLoading(false);
     router.push("/");
   };
 
   const handleGoogleLogin = async () => {
-    await signIn.social({ provider: "google", callbackURL: "/" });
+    try {
+       
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+        newUserCallbackURL: "/",
+        prompt: "select_account", 
+      });
+
+    } catch (err) {
+      toast.error("Google login failed",{ duration: 3000 });
+    }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
-      <h1 className="text-3xl font-bold text-center mb-2" style={{ color: "#941865" }}>
+    <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+      <h1 className="mb-2 text-center text-3xl font-bold text-[#941865]">
         Login
       </h1>
-      <p className="text-center text-gray-500 text-sm mb-6">
+
+      <p className="mb-6 text-center text-sm text-gray-500">
         Welcome back! Please login to your account.
       </p>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg py-2.5 px-4 mb-4">
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Email */}
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            placeholder="you@example.com"
-            className="border border-gray-300 rounded-lg py-2.5 px-4 text-sm outline-none focus:border-[#941865] transition-colors"
-          />
+          <div className="relative flex items-center">
+            <MdEmail className="absolute left-3 text-xl text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-gray-300 py-2.5 pr-4 pl-10 text-sm outline-none transition-colors focus:border-[#941865]"
+            />
+          </div>
         </div>
 
-        {/* Password with Show/Hide Eye Icon */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-gray-700">Password</label>
-            <span className="text-xs font-medium cursor-pointer hover:underline" style={{ color: "#941865" }}>
+            <span className="cursor-pointer text-xs font-medium text-[#941865] hover:underline">
               Forgot Password?
             </span>
           </div>
+
           <div className="relative flex items-center">
+            <MdLock className="absolute left-3 text-xl text-gray-400" />
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -89,47 +109,44 @@ export default function LoginForm() {
               onChange={handleChange}
               required
               placeholder="Enter your password"
-              className="w-full border border-gray-300 rounded-lg py-2.5 pl-4 pr-10 text-sm outline-none focus:border-[#941865] transition-colors"
+              className="w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-sm outline-none transition-colors focus:border-[#941865]"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 text-gray-400 hover:text-[#941865] transition-colors focus:outline-none"
+              className="absolute right-3 cursor-pointer text-gray-400 transition-colors hover:text-[#941865]"
             >
               {showPassword ? <MdVisibilityOff className="text-xl" /> : <MdVisibility className="text-xl" />}
             </button>
           </div>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 mt-1"
-          style={{ backgroundColor: "#941865" }}
+          className="mt-1 w-full cursor-pointer rounded-lg bg-[#941865] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-gray-200" />
+      <div className="my-5 flex items-center gap-3">
+        <div className="h-px flex-1 bg-gray-200" />
         <span className="text-xs text-gray-400">OR</span>
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="h-px flex-1 bg-gray-200" />
       </div>
-
 
       <button
         onClick={handleGoogleLogin}
-        className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:border-[#941865] hover:text-[#941865] transition-all duration-200"
+        className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-[#941865] hover:text-[#941865]"
       >
         <FcGoogle className="text-xl" />
         Continue with Google
       </button>
 
-      <p className="text-center text-sm text-gray-500 mt-6">
+      <p className="mt-6 text-center text-sm text-gray-500">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-semibold hover:underline" style={{ color: "#941865" }}>
+        <Link href="/register" className="font-semibold text-[#941865] hover:underline">
           Register
         </Link>
       </p>

@@ -1,2 +1,51 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* =========================
+   INPUT TEXT COLOR FIX
+========================= */
+
+input,
+textarea,
+select {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  caret-color: #000 !important;
+  background-color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* Placeholder color fix */
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important; /* gray */
+  -webkit-text-fill-color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* iPhone Safari autofill fix */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px white inset !important;
+}
+
+/* Disabled input fix */
+
+input:disabled,
+textarea:disabled {
+  opacity: 1 !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+/* Prevent dark mode auto styling */
+
+:root {
+  color-scheme: light;
+}
