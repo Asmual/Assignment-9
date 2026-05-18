@@ -8,5 +8,5 @@ git remote add origin https://github.com/Asmual/Assignment-9.git
 git push -u origin main
 
 git add .
-git commit -m " "
+git commit -m "Protected Dashboard-Why choice section completed"
 git push -u origin main
