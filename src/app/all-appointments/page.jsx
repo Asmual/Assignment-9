@@ -11,10 +11,10 @@ export default function AllAppointmentsPage() {
     <div className="w-full min-h-[calc(100vh-75px-360px)] px-4 py-12 md:px-6">
       <div className="max-w-7xl mx-auto">
         
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">All Appointments</h1>
+        <h1 className="text-2xl font-bold mb-6">All Appointments</h1>
         
 
-        <p className="text-gray-500">No appointments found. Content coming soon...</p>
+        <p className="font-semibold">No appointments found. Content coming soon...</p>
         
       </div>
     </div>

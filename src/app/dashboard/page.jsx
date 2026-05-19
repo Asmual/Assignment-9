@@ -10,24 +10,24 @@ export default function DashboardPage() {
   const { data: session, isPending } = useSession();
   const [activeTab, setActiveTab] = useState("bookings");
 
-//   // Protected Route Logic
-//   useEffect(() => {
-//     if (!isPending && !session?.user) {
-//       router.push("/login");
-//     }
-//   }, [session, isPending, router]);
+  // Protected Route Logic
+  useEffect(() => {
+    if (!isPending && !session?.user) {
+      router.push("/login");
+    }
+  }, [session, isPending, router]);
 
-//   // Show a loading spinner while checking authentication
-//   if (isPending || !session?.user) {
-//     return (
-//       <div className="flex min-h-[60vh] items-center justify-center">
-//         <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#941865] border-t-transparent"></div>
-//       </div>
-//     );
-//   }
+  // Show a loading spinner while checking authentication
+  if (isPending || !session?.user) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#941865] border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full min-h-[70vh] px-4 py-12 md:px-6 bg-gray-50/50">
+    <div className="w-full min-h-[70vh] px-4 py-12 md:px-6 bg-red-50">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Dashboard Title - Updated to h2 and Base Color */}
