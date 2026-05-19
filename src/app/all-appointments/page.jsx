@@ -1,4 +1,4 @@
-// src/app/all-appointments/page.jsx
+import AllAppointmentsClient from "@/components/allappoint/AllAppointments";
 
 export const metadata = {
   title: "All Appointments",
@@ -7,15 +7,9 @@ export const metadata = {
 
 export default function AllAppointmentsPage() {
   return (
-
-    <div className="w-full min-h-[calc(100vh-75px-360px)] px-4 py-12 md:px-6">
-      <div className="max-w-7xl mx-auto">
-        
-        <h1 className="text-2xl font-bold mb-6">All Appointments</h1>
-        
-
-        <p className="font-semibold">No appointments found. Content coming soon...</p>
-        
+    <div className="w-full min-h-[calc(100vh-75px-360px)] bg-red-50 py-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        <AllAppointmentsClient />
       </div>
     </div>
   );

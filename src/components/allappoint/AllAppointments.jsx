@@ -2,53 +2,58 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client"; 
 import { topDoctors } from "@/data/doctors";
 import { FaStar, FaRegClock, FaMapMarkerAlt, FaStethoscope } from "react-icons/fa";
 
-// Sort doctors by rating dynamically and select the top 3 profiles
-const topRated = [...topDoctors].sort((a, b) => b.rating - a.rating).slice(0, 3);
+// Mock data for 10 Bangladeshi doctors
 
-export default function TopRatedDoctors() {
+
+export default function AllAppointmentsClient() {
   const router = useRouter();
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
 
-  // Enforce secure routing based on authentication state
+  // Handle routing based on user authentication state
   const handleViewDetails = (id) => {
-    router.push(isLoggedIn ? `/doctors/${id}` : "/login");
+    if (isLoggedIn) {
+      router.push(`/doctors/${id}`);
+    } else {
+      router.push("/login");
+    }
   };
 
   return (
-    <section className="py-12 px-4 max-full mx-auto bg-white w-full">
+    <>
       {/* Header Section */}
       <div className="text-center max-w-xl mx-auto mb-10">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
-          Top <span style={{ color: "#941865" }}>Rated Doctors</span>
-        </h2>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+          Available <span style={{ color: "#941865" }}>Appointments</span>
+        </h1>
         <p className="mt-2 text-xs md:text-sm text-gray-500">
-          Our highest rated doctors based on patient reviews and experience.
+          Explore all our verified doctors and schedule your visit instantly.
         </p>
       </div>
 
-      {/* 3-Column Layout Container forcing flat background integration */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 bg-white">
-        {topRated.map((doctor) => (
+      {/* 4-Column Grid Layout for Large Screens */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+        {topDoctors.map((doctor) => (
           <div
             key={doctor.id}
             className="bg-white rounded-xl shadow-sm border border-gray-150 overflow-hidden hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
           >
-            {/* Top-aligned Image Container */}
+            {/* Image Container with Restructured Aspect Ratio */}
             <div className="relative h-56 w-full bg-gray-50 overflow-hidden">
               <Image
                 src={doctor.image}
                 alt={doctor.name}
                 fill
-                sizes="(max-w-6xl) 33vw"
+                sizes="(max-w-7xl) 25vw"
+                priority={doctor.id === "doc-1" || doctor.id === "doc-2"}
                 className="object-cover object-top group-hover:scale-102 transition-transform duration-500"
               />
-              
-              {/* Rating Badge */}
+
+              {/* Absolute Rating Badge (Top Right Corner) */}
               <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded-full text-gray-800 shadow-sm flex items-center gap-1">
                 <FaStar className="text-amber-400" />
                 {doctor.rating}
@@ -56,22 +61,22 @@ export default function TopRatedDoctors() {
               </div>
             </div>
 
-            {/* Core Details Content Area */}
-            <div className="p-4 flex flex-col grow gap-2.5 bg-white">
+            {/* Content Details Container */}
+            <div className="p-4 flex flex-col grow gap-2.5">
               <div>
-                {/* Doctor Identity */}
+                {/* Doctor Name */}
                 <h3 className="text-base font-bold text-gray-800 group-hover:text-[#941865] transition-colors line-clamp-1">
                   {doctor.name}
                 </h3>
                 
-                {/* Specialty Title */}
+                {/* Specialty Subtitle */}
                 <div className="flex items-center gap-1 text-xs font-semibold mt-0.5" style={{ color: "#941865" }}>
                   <FaStethoscope className="text-[10px]" />
                   <span className="truncate">{doctor.specialty}</span>
                 </div>
               </div>
 
-              {/* Description Paragraph with fixed bounding metrics */}
+              {/* Robust Description Paragraph preventing text clipping */}
               <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed h-12 overflow-hidden">
                 {doctor.description || "No description provided for this specific doctor profile."}
               </p>
@@ -88,22 +93,22 @@ export default function TopRatedDoctors() {
                 </div>
               </div>
 
-              {/* Structural Divider */}
+              {/* Divider Line */}
               <div className="border-b border-gray-100 my-0.5 w-full" />
 
-              {/* Card Footer containing Fee Metrics & Primary Call-to-Action */}
-              <div className="flex items-center justify-between mt-auto pt-1 bg-white">
+              {/* Footer Section: Fee & Action Button */}
+              <div className="flex items-center justify-between mt-auto pt-1">
                 <div className="flex flex-col">
                   <span className="text-[9px] text-gray-400 font-medium uppercase tracking-wider">Fee</span>
                   <span className="text-sm font-extrabold" style={{ color: "#941865" }}>
                     {doctor.fee}
                   </span>
                 </div>
-                
-                {/* Brand-compliant Action Button */}
+
+                {/* Primary Action Button */}
                 <button
                   onClick={() => handleViewDetails(doctor.id)}
-                  className="px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 transition-all duration-200 shrink-0"
+                  className="px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-sm hover:opacity-90 active:scale-98 transition-all duration-200 shrink-0"
                   style={{ backgroundColor: "#941865" }}
                 >
                   View Details
@@ -113,6 +118,6 @@ export default function TopRatedDoctors() {
           </div>
         ))}
       </div>
-    </section>
+    </>
   );
 }

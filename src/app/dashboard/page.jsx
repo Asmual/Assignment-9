@@ -2,22 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client"; 
+import { useSession } from "@/lib/auth-client";
 import { FaCalendarAlt, FaUserAlt } from "react-icons/fa";
+import MyProfile from "./_components/MyProfile";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [activeTab, setActiveTab] = useState("bookings");
 
-  // Protected Route Logic
   useEffect(() => {
     if (!isPending && !session?.user) {
       router.push("/login");
     }
   }, [session, isPending, router]);
 
-  // Show a loading spinner while checking authentication
   if (isPending || !session?.user) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -27,17 +26,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="w-full min-h-[70vh] px-4 py-12 md:px-6 bg-red-50">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Dashboard Title - Updated to h2 and Base Color */}
+    <div className="w-full min-h-[70vh] px-4 py-12 md:px-6 bg-pink-50">
+      <div className="max-w-6xl mx-auto space-y-8">
+
         <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl text-[#941865]">
           Dashboard
         </h2>
 
-        {/* Tab Buttons Navigation */}
-        <div className="flex flex-wrap gap-4 border-b border-gray-200 pb-5">
-          {/* My Bookings Button */}
+        <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-5">
           <button
             onClick={() => setActiveTab("bookings")}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
@@ -50,7 +46,6 @@ export default function DashboardPage() {
             My Bookings
           </button>
 
-          {/* My Profile Button */}
           <button
             onClick={() => setActiveTab("profile")}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
@@ -64,26 +59,17 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Dynamic Content Display Area */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm min-h-62.5 flex items-center justify-center text-center">
+        {/* Tab Content */}
+        <div>
           {activeTab === "bookings" ? (
-            <div className="space-y-2">
-              <p className="text-xl font-medium text-gray-800">
-                My Booking is coming
-              </p>
-              <p className="text-sm text-gray-400">
-                Your future medical appointments will be managed here.
-              </p>
+            <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm min-h-64 flex items-center justify-center text-center">
+              <div className="space-y-2">
+                <p className="text-xl font-medium text-gray-800">My Bookings coming soon</p>
+                <p className="text-sm text-gray-400">Your future medical appointments will be managed here.</p>
+              </div>
             </div>
           ) : (
-            <div className="space-y-2">
-              <p className="text-xl font-medium text-gray-800">
-                My Profile is coming
-              </p>
-              <p className="text-sm text-gray-400">
-                Your personal details and medical records will be visible here.
-              </p>
-            </div>
+            <MyProfile user={session.user} />
           )}
         </div>
 
