@@ -12,7 +12,7 @@ const reviews = [
     rating: 5,
     comment:
       "DocAppoint made booking my cardiologist appointment incredibly easy. The doctor was professional and attentive. I highly recommend this platform to everyone.",
-    doctor: "Dr. Ayesha Rahman",
+    doctor: "Dr. Jahangir Alam",
     specialty: "Cardiologist",
   },
   {
@@ -91,7 +91,7 @@ export default function Testimonials() {
 
               {/* Patient Comment */}
               <p className="text-gray-600 text-sm leading-relaxed flex-1">
-                "{review.comment}"
+                &ldquo;{review.comment}&rdquo;
               </p>
 
               {/* Clean Divider Line */}

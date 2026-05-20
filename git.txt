@@ -8,5 +8,5 @@ git remote add origin https://github.com/Asmual/Assignment-9.git
 git push -u origin main
 
 git add .
-git commit -m "All Appointments page and TopRatedDoctors page added"
+git commit -m "Fetching data from Bakend server"
 git push -u origin main
