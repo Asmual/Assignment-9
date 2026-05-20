@@ -26,33 +26,38 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="w-full min-h-[70vh] px-4 py-12 md:px-6 bg-pink-50">
+    <div className="w-full min-h-[70vh] px-4 py-10 md:px-6 bg-white">
       <div className="max-w-6xl mx-auto space-y-8">
 
         <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl text-[#941865]">
           Dashboard
         </h2>
 
-        <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-5">
+        <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+          
+          {/* --- My Bookings Button --- */}
           <button
             onClick={() => setActiveTab("bookings")}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "bookings"
-                ? "bg-[#941865] text-white shadow-md"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                ? "bg-[#941865] text-white shadow-md border border-[#941865]"
+                : "bg-white text-gray-700 hover:bg-red-50/20" 
             }`}
+            style={activeTab !== "bookings" ? { borderColor: "#941865", borderWidth: "1px" } : {}}
           >
             <FaCalendarAlt className="text-base" />
             My Bookings
           </button>
 
+          {/* --- My Profile Button --- */}
           <button
             onClick={() => setActiveTab("profile")}
             className={`flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "profile"
-                ? "bg-[#941865] text-white shadow-md"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                ? "bg-[#941865] text-white shadow-md border border-[#941865]"
+                : "bg-white text-gray-700 hover:bg-red-50/20"
             }`}
+            style={activeTab !== "profile" ? { borderColor: "#941865", borderWidth: "1px" } : {}}
           >
             <FaUserAlt className="text-base" />
             My Profile

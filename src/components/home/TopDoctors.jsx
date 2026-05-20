@@ -103,7 +103,7 @@ export default function TopRatedDoctors() {
                 {/* Brand-compliant Action Button */}
                 <button
                   onClick={() => handleViewDetails(doctor.id)}
-                  className="px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 transition-all duration-200 shrink-0"
+                  className="px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 transition-all duration-200 shrink-0 cursor-pointer"
                   style={{ backgroundColor: "#941865" }}
                 >
                   View Details

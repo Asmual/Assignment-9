@@ -9,6 +9,8 @@ export const topDoctors = [
     image: "/images/doctor.1.jpg",
     experience: "10 Years exp",
     location: "Dhaka, Bangladesh",
+    availableTime: "05:00 PM - 09:00 PM",
+    offDays: ["Friday"],
     description: "Expert in interventional cardiology and advanced heart failure management.",
   },
   {
@@ -21,6 +23,8 @@ export const topDoctors = [
     image: "/images/doctor.2.jpg",
     experience: "8 Years exp",
     location: "Chittagong, Bangladesh",
+    availableTime: "04:30 PM - 08:30 PM",
+    offDays: ["Friday"],
     description: "Dedicated to providing compassionate healthcare for infants and children.",
   },
   {
@@ -33,6 +37,8 @@ export const topDoctors = [
     image: "/images/doctor.3.jpg",
     experience: "7 Years exp",
     location: "Cox's Bazar, Bangladesh",
+    availableTime: "05:00 PM - 09:30 PM",
+    offDays: ["Thursday", "Friday"],
     description: "Specialized in advanced clinical, surgical, and cosmetic dermatology.",
   },
   {
@@ -45,6 +51,8 @@ export const topDoctors = [
     image: "/images/doctor4.jpg",
     experience: "12 Years exp",
     location: "Dhaka, Bangladesh",
+    availableTime: "04:00 PM - 08:00 PM",
+    offDays: ["Friday"],
     description: "Providing comprehensive maternal care and reproductive health services.",
   },
   {
@@ -57,6 +65,8 @@ export const topDoctors = [
     image: "/images/doctor5.jpg",
     experience: "9 Years exp",
     location: "Sylhet, Bangladesh",
+    availableTime: "06:00 PM - 10:00 PM",
+    offDays: ["Wednesday", "Friday"],
     description: "Focused on treating complex neuromuscular and neurological disorders.",
   },
   {
@@ -69,6 +79,8 @@ export const topDoctors = [
     image: "/images/doctor6.jpg",
     experience: "6 Years exp",
     location: "Rajshahi, Bangladesh",
+    availableTime: "03:30 PM - 07:30 PM",
+    offDays: ["Friday"],
     description: "Expert eye surgeon specialized in laser treatments and cataract surgeries.",
   },
   {
@@ -81,6 +93,8 @@ export const topDoctors = [
     image: "/images/doctor7.jpg",
     experience: "11 Years exp",
     location: "Khulna, Bangladesh",
+    availableTime: "05:00 PM - 09:00 PM",
+    offDays: ["Thursday"],
     description: "Specialized in joint replacements, sports injuries, and bone trauma.",
   },
   {
@@ -93,6 +107,8 @@ export const topDoctors = [
     image: "/images/doctor8.jpg",
     experience: "5 Years exp",
     location: "Barisal, Bangladesh",
+    availableTime: "04:00 PM - 08:30 PM",
+    offDays: ["Friday"],
     description: "Expertise in managing diabetes, thyroid conditions, and hormonal issues.",
   },
   {
@@ -105,6 +121,8 @@ export const topDoctors = [
     image: "/images/doctor9.jpg",
     experience: "8 Years exp",
     location: "Rangpur, Bangladesh",
+    availableTime: "05:00 PM - 09:00 PM",
+    offDays: ["Friday"],
     description: "Specialized in clinical psychiatry, mental health therapy, and counseling.",
   },
   {
@@ -117,6 +135,8 @@ export const topDoctors = [
     image: "/images/doctor10.jpg",
     experience: "4 Years exp",
     location: "Mymensingh, Bangladesh",
+    availableTime: "09:00 AM - 01:00 PM", // Morning chamber shift standard
+    offDays: ["Sunday"],
     description: "Providing reliable and complete primary healthcare services for families.",
   },
 ];
