@@ -38,15 +38,18 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
 
                 const token = getStoredToken();
 
-                const res = await fetch(`http://localhost:5000/api/doctors/${doctorId}`, {
-                    method: "GET",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-    
-                        ...(token && { "Authorization": `Bearer ${token}` }),
+                const res = await fetch(
+                    `https://assignment-9-server-ybq9.onrender.com/api/doctors/${doctorId}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            ...(token && {
+                                Authorization: `Bearer ${token}`,
+                            }),
+                        },
                     }
-                });
+                );
 
                 const data = await res.json();
 
@@ -95,7 +98,7 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
         };
 
         try {
-            const response = await fetch("http://localhost:5000/api/bookings", {
+            const response = await fetch("https://assignment-9-server-ybq9.onrender.com/api/bookings", {
                 method: "POST",
                 credentials: "include",
                 headers: {

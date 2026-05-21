@@ -12,11 +12,12 @@ export const {
 } = authClient;
 
 
-
-// JWT TOKEN STORE HELPER
+// FETCH JWT TOKEN
 export async function fetchAndStoreToken(user) {
+
   try {
-    const res = await fetch(
+
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/jwt`,
       {
         method: "POST",
@@ -31,36 +32,40 @@ export async function fetchAndStoreToken(user) {
       }
     );
 
-    const data = await res.json();
+    const data = await response.json();
 
     if (data.success && data.token) {
+
       localStorage.setItem(
         "docappoint_token",
         data.token
       );
     }
 
-  } catch (err) {
-    console.error("Token fetch failed:", err);
+  } catch (error) {
+
+    console.error("JWT token fetch failed:", error);
   }
 }
-
 
 
 // GET TOKEN
 export function getStoredToken() {
+
   if (typeof window !== "undefined") {
+
     return localStorage.getItem("docappoint_token");
   }
+
   return null;
 }
 
 
-
 // CLEAR TOKEN
-
 export function clearStoredToken() {
+
   if (typeof window !== "undefined") {
+
     localStorage.removeItem("docappoint_token");
   }
 }

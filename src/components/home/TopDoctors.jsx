@@ -7,7 +7,7 @@ import { useSession } from "@/lib/auth-client";
 import { FaStar, FaRegClock, FaMapMarkerAlt, FaStethoscope } from "react-icons/fa";
 
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://assignment-9-server-ybq9.onrender.com";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://assignment-9-server-ybq9.onrender.com";
 
 export default function TopRatedDoctors() {
   const router = useRouter();

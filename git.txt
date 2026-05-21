@@ -8,5 +8,5 @@ git remote add origin https://github.com/Asmual/Assignment-9.git
 git push -u origin main
 
 git add .
-git commit -m "Top Doctor Section Function Update & Bug Fix"
+git commit -m "Last Check & Bug Fix"
 git push -u origin main

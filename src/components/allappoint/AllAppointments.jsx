@@ -21,7 +21,7 @@ export default function AllAppointmentsClient() {
       try {
         setIsLoading(true);
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/doctors`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL || "https://assignment-9-server-ybq9.onrender.com"}/api/doctors`,
           {
             method: "GET",
             credentials: "include",

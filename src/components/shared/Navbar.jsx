@@ -17,10 +17,10 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // ✅ user login করলে backend থেকে JWT নিয়ে localStorage এ রাখো
+
   useEffect(() => {
     if (user?.email) {
-      fetch("http://localhost:5000/jwt", {
+      fetch("https://assignment-9-server-ybq9.onrender.com/jwt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: user.email, name: user.name }),
@@ -33,7 +33,7 @@ export default function Navbar() {
         })
         .catch(() => {});
     } else {
-      // ✅ logout হলে token মুছে দাও
+ 
       localStorage.removeItem("docappoint_token");
     }
   }, [user]);
@@ -55,7 +55,7 @@ export default function Navbar() {
     }
   };
 
-  // বাকি সব আগের মতোই থাকবে...
+
   return (
     <nav className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">

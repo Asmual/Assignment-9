@@ -17,7 +17,7 @@ import {
 import MyProfile from "./_components/MyProfile";
 
 // Global Production/Development Backend API Endpoint configuration
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://assignment-9-server-ybq9.onrender.com";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://assignment-9-server-ybq9.onrender.com";
 
 export default function DashboardPage() {
     const router = useRouter();
