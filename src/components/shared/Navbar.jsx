@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Image from "next/image";
@@ -32,12 +33,13 @@ export default function Navbar() {
     <nav className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
         <Link href="/" className="flex items-center gap-2">
-          <Image
+          <img
             src="/images/logo.png"
             alt="DocAppoint Logo"
             width={46}
             height={46}
             className="object-contain"
+            style={{ height: "auto" }}
           />
           <span className="text-xl font-bold tracking-tight" style={{ color: "#941865" }}>
             DocAppoint

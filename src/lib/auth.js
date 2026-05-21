@@ -11,7 +11,9 @@ await client.connect();
 export const auth = betterAuth({
   database: mongodbAdapter(client.db("DocAppoint")),
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+  
   emailAndPassword: {
     enabled: true,
   },
@@ -19,7 +21,6 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
-
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },

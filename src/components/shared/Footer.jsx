@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,16 +13,17 @@ const Footer = () => {
     <footer className="border-t border-gray-200 bg-white w-full">
       {/* Main Footer Links Grid */}
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 md:grid-cols-2 lg:grid-cols-4">
-        
+
         {/* Column 1: Brand Info */}
         <div className="space-y-5">
           <Link href="/" className="flex items-center gap-3">
-            <Image
+            <img
               src="/images/logo.png"
               alt="DocAppoint Logo"
-              width={48}
-              height={48}
-              className="object-cover"
+              width={46}
+              height={46}
+              className="object-contain"
+              style={{ height: "auto" }}
             />
             <div>
               <h2 className="text-3xl font-bold text-[#941865]">

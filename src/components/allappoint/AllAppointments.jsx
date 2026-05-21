@@ -22,7 +22,7 @@ export default function AllAppointmentsClient() {
       try {
         setIsLoading(true);
 
-        // Better-Auth এর সেশন কুকি অটোমেটিক যাওয়ার জন্য credentials: "include" ব্যবহার করা হয়েছে
+    
         const res = await fetch("http://localhost:5000/api/doctors", {
           method: "GET",
           credentials: "include",

@@ -8,5 +8,5 @@ git remote add origin https://github.com/Asmual/Assignment-9.git
 git push -u origin main
 
 git add .
-git commit -m "Fetching data from Bakend server"
+git commit -m "Fetching data from Bakend Search&Filter fucntion added "
 git push -u origin main
