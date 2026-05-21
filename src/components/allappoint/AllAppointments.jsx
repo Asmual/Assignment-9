@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
@@ -12,7 +12,6 @@ export default function AllAppointmentsClient() {
   const isLoggedIn = !!session?.user;
 
   const [doctors, setDoctors] = useState([]);
-  const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -21,20 +20,20 @@ export default function AllAppointmentsClient() {
     const fetchDoctors = async () => {
       try {
         setIsLoading(true);
-
-    
-        const res = await fetch("http://localhost:5000/api/doctors", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "content-type": "application/json"
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/doctors`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "content-type": "application/json",
+            },
           }
-        });
+        );
 
         if (res.ok) {
           const data = await res.json();
           setDoctors(data);
-          setFilteredDoctors(data);
         } else {
           console.error("Server responded with an error status");
         }
@@ -48,7 +47,7 @@ export default function AllAppointmentsClient() {
     fetchDoctors();
   }, []);
 
-  useEffect(() => {
+  const filteredDoctors = useMemo(() => {
     let result = [...doctors];
 
     if (searchQuery.trim() !== "") {
@@ -65,10 +64,8 @@ export default function AllAppointmentsClient() {
       result.sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0));
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFilteredDoctors(result);
+    return result;
   }, [searchQuery, sortBy, doctors]);
-
 
   const handleViewDetails = (id) => {
     if (isLoggedIn) {

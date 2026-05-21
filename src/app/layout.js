@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Dynamic metadata configuration for SEO quality
 export const metadata = {
   title: {
     default: "Home | DocAppoint",

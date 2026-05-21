@@ -4,20 +4,12 @@ import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import { getStoredToken } from "@/lib/auth-client";
 import { toast } from "react-hot-toast";
 import {
-    FaStar,
-    FaRegClock,
-    FaMapMarkerAlt,
-    FaStethoscope,
-    FaArrowLeft,
-    FaMoneyBillWave,
-    FaTimes,
-    FaUser,
-    FaEnvelope,
-    FaPhoneAlt,
-    FaCalendarAlt,
-    FaVenusMars
+    FaStar, FaRegClock, FaMapMarkerAlt, FaStethoscope,
+    FaArrowLeft, FaMoneyBillWave, FaTimes, FaUser,
+    FaEnvelope, FaPhoneAlt, FaCalendarAlt, FaVenusMars
 } from "react-icons/fa";
 
 export default function DoctorDetailsPage({ params: paramsPromise }) {
@@ -44,22 +36,29 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
             try {
                 setIsLoading(true);
 
+                const token = getStoredToken();
+
                 const res = await fetch(`http://localhost:5000/api/doctors/${doctorId}`, {
                     method: "GET",
                     credentials: "include",
                     headers: {
-                        "content-type": "application/json"
+                        "Content-Type": "application/json",
+    
+                        ...(token && { "Authorization": `Bearer ${token}` }),
                     }
                 });
 
+                const data = await res.json();
+
                 if (res.ok) {
-                    const data = await res.json();
                     setDoctor(data);
                 } else {
-                    console.error("Failed to load doctor profile data");
+                    console.error("Failed to load doctor profile:", data.message);
+                    toast.error(data.message || "Failed to load doctor profile");
                 }
             } catch (error) {
                 console.error("Error fetching doctor details:", error);
+                toast.error("Network error. Please try again.");
             } finally {
                 setIsLoading(false);
             }
@@ -78,6 +77,8 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+
+        const token = getStoredToken();
 
         const appointmentDetails = {
             id: doctor.id || doctor._id,
@@ -98,7 +99,8 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
                 method: "POST",
                 credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` }),
                 },
                 body: JSON.stringify(appointmentDetails)
             });
@@ -106,7 +108,7 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                toast.success(`Success! Appointment with ${doctor.name} has been submitted.`, {
+                toast.success(`Appointment with ${doctor.name} confirmed!`, {
                     duration: 4000,
                     style: {
                         background: "#ffffff",
@@ -117,19 +119,16 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
                         border: "1px solid #e2e8f0",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)"
                     },
-                    iconTheme: {
-                        primary: "green",
-                        secondary: "#fff"
-                    }
+                    iconTheme: { primary: "green", secondary: "#fff" }
                 });
                 setIsModalOpen(false);
                 setFormData({ phone: "", gender: "Male", appointmentDate: "", notes: "" });
             } else {
-                toast.error(result.message || "Failed to process appointment reservation.");
+                toast.error(result.message || "Failed to process appointment.");
             }
         } catch (error) {
-            console.error("Network submission error:", error);
-            toast.error("Server connection lost. Please try again later.");
+            console.error("Booking error:", error);
+            toast.error("Server connection lost. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -200,7 +199,7 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
                         <div className="flex flex-col gap-2">
                             <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Professional Statement</h3>
                             <p className="text-sm text-gray-600 leading-relaxed">
-                                {doctor.description || "No professional statement summary has been provided for this specific profile."}
+                                {doctor.description || "No professional statement available."}
                             </p>
                         </div>
 
@@ -245,8 +244,8 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm transition-all duration-300">
-                    <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 transform scale-100 transition-all duration-300 flex flex-col my-5 max-h-[calc(100vh-40px)]">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col my-5 max-h-[calc(100vh-40px)]">
                         <div className="p-4 text-white flex items-center justify-between shrink-0" style={{ backgroundColor: "#941865" }}>
                             <div>
                                 <h3 className="font-bold text-sm">Confirm Appointment</h3>
@@ -254,23 +253,18 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="text-white/80 hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/10"
+                                className="text-white/80 hover:text-white cursor-pointer p-1 rounded-lg hover:bg-white/10"
                             >
                                 <FaTimes className="text-xs" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleFormSubmit} className="p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar">
+                        <form onSubmit={handleFormSubmit} className="p-4 overflow-y-auto flex flex-col gap-3">
                             <div className="flex flex-col gap-0.5">
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Patient Name</label>
                                 <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-500">
                                     <FaUser className="text-gray-400 shrink-0 text-[10px]" />
-                                    <input
-                                        type="text"
-                                        value={currentUser?.name || "Guest Account"}
-                                        disabled
-                                        className="bg-transparent w-full focus:outline-none cursor-not-allowed text-xs"
-                                    />
+                                    <input type="text" value={currentUser?.name || "Guest Account"} disabled className="bg-transparent w-full focus:outline-none cursor-not-allowed text-xs" />
                                 </div>
                             </div>
 
@@ -278,42 +272,23 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Email Address</label>
                                 <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-500">
                                     <FaEnvelope className="text-gray-400 shrink-0 text-[10px]" />
-                                    <input
-                                        type="email"
-                                        value={currentUser?.email || "guest@healthcare.com"}
-                                        disabled
-                                        className="bg-transparent w-full focus:outline-none cursor-not-allowed text-xs"
-                                    />
+                                    <input type="email" value={currentUser?.email || "guest@healthcare.com"} disabled className="bg-transparent w-full focus:outline-none cursor-not-allowed text-xs" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="flex flex-col gap-0.5">
                                     <label className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Mobile <span className="text-red-500">*</span></label>
-                                    <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 focus-within:border-[#941865] transition-colors">
+                                    <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 focus-within:border-[#941865] transition-colors">
                                         <FaPhoneAlt className="text-gray-400 shrink-0 text-[10px]" />
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            placeholder="01XXXXXXXXX"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="bg-transparent w-full focus:outline-none text-xs"
-                                        />
+                                        <input type="tel" name="phone" placeholder="01XXXXXXXXX" required value={formData.phone} onChange={handleInputChange} className="bg-transparent w-full focus:outline-none text-xs" />
                                     </div>
                                 </div>
-
                                 <div className="flex flex-col gap-0.5">
                                     <label className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Gender <span className="text-red-500">*</span></label>
-                                    <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 focus-within:border-[#941865] transition-colors">
+                                    <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 focus-within:border-[#941865] transition-colors">
                                         <FaVenusMars className="text-gray-400 shrink-0 text-[10px]" />
-                                        <select
-                                            name="gender"
-                                            value={formData.gender}
-                                            onChange={handleInputChange}
-                                            className="bg-transparent w-full focus:outline-none cursor-pointer text-xs"
-                                        >
+                                        <select name="gender" value={formData.gender} onChange={handleInputChange} className="bg-transparent w-full focus:outline-none cursor-pointer text-xs">
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
                                             <option value="Other">Other</option>
@@ -324,56 +299,28 @@ export default function DoctorDetailsPage({ params: paramsPromise }) {
 
                             <div className="flex flex-col gap-0.5">
                                 <label className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Preferred Date <span className="text-red-500">*</span></label>
-                                <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 focus-within:border-[#941865] transition-colors">
+                                <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 focus-within:border-[#941865] transition-colors">
                                     <FaCalendarAlt className="text-gray-400 shrink-0 text-[10px]" />
-                                    <input
-                                        type="date"
-                                        name="appointmentDate"
-                                        required
-                                        value={formData.appointmentDate}
-                                        onChange={handleInputChange}
-                                        className="bg-transparent w-full focus:outline-none cursor-pointer text-xs"
-                                    />
+                                    <input type="date" name="appointmentDate" required value={formData.appointmentDate} onChange={handleInputChange} className="bg-transparent w-full focus:outline-none cursor-pointer text-xs" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-0.5">
                                 <label className="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Symptoms / Notes</label>
-                                <textarea
-                                    name="notes"
-                                    rows="2"
-                                    placeholder="Briefly describe your symptoms..."
-                                    value={formData.notes}
-                                    onChange={handleInputChange}
-                                    className="bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-800 focus:outline-none focus:border-[#941865] transition-colors resize-none"
-                                />
+                                <textarea name="notes" rows="2" placeholder="Briefly describe your symptoms..." value={formData.notes} onChange={handleInputChange} className="bg-white border border-gray-300 rounded-lg p-2 text-xs text-gray-800 focus:outline-none focus:border-[#941865] transition-colors resize-none" />
                             </div>
 
-                            <div className="bg-gray-50 border border-gray-150 rounded-xl p-2.5 flex items-center justify-between text-xs mt-1 shrink-0">
+                            <div className="bg-gray-50 border border-gray-150 rounded-xl p-2.5 flex items-center justify-between text-xs mt-1">
                                 <span className="text-gray-500 font-medium">Total Consultation Fee</span>
                                 <span className="font-extrabold text-xs" style={{ color: "#941865" }}>${doctor.fee}</span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3 mt-1 shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    disabled={isSubmitting}
-                                    className="cursor-pointer py-2 rounded-xl border border-gray-300 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors text-center disabled:opacity-50"
-                                >
+                            <div className="grid grid-cols-2 gap-3 mt-1">
+                                <button type="button" onClick={() => setIsModalOpen(false)} disabled={isSubmitting} className="cursor-pointer py-2 rounded-xl border border-gray-300 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50">
                                     Cancel
                                 </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="cursor-pointer py-2 rounded-xl text-xs font-bold text-white shadow-md hover:opacity-90 active:scale-95 transition-all text-center flex items-center justify-center disabled:opacity-75"
-                                    style={{ backgroundColor: "#941865" }}
-                                >
-                                    {isSubmitting ? (
-                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                    ) : (
-                                        "Confirm Booking"
-                                    )}
+                                <button type="submit" disabled={isSubmitting} className="cursor-pointer py-2 rounded-xl text-xs font-bold text-white shadow-md hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-75" style={{ backgroundColor: "#941865" }}>
+                                    {isSubmitting ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div> : "Confirm Booking"}
                                 </button>
                             </div>
                         </form>

@@ -21,6 +21,7 @@ export default function RegisterForm() {
     setError("");
   };
 
+  // Synchronous evaluations for strict password structural constraints
   const isMinLength = form.password.length >= 6;
   const hasUppercase = /[A-Z]/.test(form.password);
   const hasLowercase = /[a-z]/.test(form.password);
@@ -30,8 +31,16 @@ export default function RegisterForm() {
     e.preventDefault();
     setError("");
 
-    if (!isMinLength || !hasUppercase || !hasLowercase || !passwordsMatch) {
-      const msg = "Please fulfill all password requirements.";
+    // Halt form tracking if password conditions are unfulfilled
+    if (!isMinLength || !hasUppercase || !hasLowercase) {
+      const msg = "Password must contain uppercase, lowercase, and at least 6 characters.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    if (!passwordsMatch) {
+      const msg = "Passwords do not match.";
       setError(msg);
       toast.error(msg);
       return;
@@ -39,7 +48,7 @@ export default function RegisterForm() {
 
     setLoading(true);
 
-
+    // Call Better Auth email sign-up handler
     const { error: signUpError } = await authClient.signUp.email({
       name: form.name,
       email: form.email,
@@ -59,9 +68,8 @@ export default function RegisterForm() {
     try {
       await authClient.signOut();
     } catch (signOutErr) {
-      console.error("Auto-login prevention failed:", signOutErr);
+      console.error("Session execution tracking halted:", signOutErr);
     }
-
 
     toast.success("Registration Successful! Please login.", { duration: 3000 });
     setLoading(false);
@@ -76,7 +84,7 @@ export default function RegisterForm() {
         prompt: "select_account"
       });
     } catch (err) {
-      toast.error("Google signup failed", { duration: 3000 });
+      toast.error("Google authentication failed. Please try again.", { duration: 3000 });
     }
   };
 

@@ -25,6 +25,7 @@ export default function LoginForm() {
     setLoading(true);
     setError("");
 
+    // Execute password-based email sign-in using Better Auth client
     const { error: loginError } = await authClient.signIn.email({
       email: form.email,
       password: form.password,
@@ -32,7 +33,7 @@ export default function LoginForm() {
     });
 
     if (loginError) {
-      const msg = loginError.message || "Login failed";
+      const msg = loginError.message || "Invalid credentials. Please try again.";
       setError(msg);
       toast.error(msg, { duration: 3000 });
       setLoading(false);
@@ -46,16 +47,15 @@ export default function LoginForm() {
 
   const handleGoogleLogin = async () => {
     try {
-       
+      // Execute continuous authentication flow via Google OAuth Provider
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/",
         newUserCallbackURL: "/",
         prompt: "select_account", 
       });
-
     } catch (err) {
-      toast.error("Google login failed",{ duration: 3000 });
+      toast.error("Google authentication failed. Please try again.", { duration: 3000 });
     }
   };
 
@@ -69,6 +69,7 @@ export default function LoginForm() {
         Welcome back! Please login to your account.
       </p>
 
+      {/* Render validation error block conditionally */}
       {error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">
           {error}

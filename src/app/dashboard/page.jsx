@@ -16,16 +16,22 @@ import {
 } from "react-icons/fa";
 import MyProfile from "./_components/MyProfile";
 
+// Global Production/Development Backend API Endpoint configuration
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://assignment-9-server-ybq9.onrender.com";
+
 export default function DashboardPage() {
     const router = useRouter();
+    
+    // Fetch stateful client-side session context via BetterAuth hook
     const { data: session, isPending } = useSession();
     const currentUser = session?.user;
 
+    // Component Core States
     const [activeTab, setActiveTab] = useState("bookings");
     const [bookings, setBookings] = useState([]);
     const [isLoadingBookings, setIsLoadingBookings] = useState(true);
     
-    // Update Modal States
+    // State management structures for Data Modification (PATCH Modal)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isSubmittingUpdate, setIsSubmittingUpdate] = useState(false);
@@ -36,65 +42,85 @@ export default function DashboardPage() {
         notes: ""
     });
 
-    // Delete Confirmation Modal States
+    // State management structures for Data Deletion (DELETE Modal)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [bookingToDelete, setBookingToDelete] = useState(null);
     const [isSubmittingDelete, setIsSubmittingDelete] = useState(false);
 
-    // Fetch Bookings by User Email
-    useEffect(() => {
-        const fetchUserBookings = async () => {
-            if (!currentUser?.email) return;
-            try {
-                setIsLoadingBookings(true);
-               
-                const res = await fetch(`http://localhost:5000/api/bookings?email=${currentUser.email}`, {
-                    credentials: "include" 
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setBookings(data.bookings || data);
-                }
-            } catch (error) {
-                console.error("Error fetching bookings:", error);
-            } finally {
-                setIsLoadingBookings(false);
-            }
-        };
-
-        if (currentUser) {
-            fetchUserBookings();
-        }
-    }, [currentUser]);
-
-    // Redirect to login if not authenticated
+    /**
+     * Hook 1: Enforces client-side Route Protection.
+     * Redirects unauthenticated entities to login sequence once async session state settles.
+     */
     useEffect(() => {
         if (!isPending && !session?.user) {
             router.push("/login");
         }
     }, [session, isPending, router]);
 
-    // Trigger Delete Confirmation Modal
-    const openDeleteConfirmation = (booking) => {
-        setBookingToDelete(booking);
-        setIsDeleteModalOpen(true);
-    };
+    /**
+     * Hook 2: Handles Data Hydration.
+     * Dispatches secure async HTTP GET requests to retrieve user-specific records from MongoDB.
+     */
+    useEffect(() => {
+        const fetchUserBookings = async () => {
+            try {
+                setIsLoadingBookings(true);
 
-    // Handle Confirmed Delete Booking Action
+                // Retrieve explicit JSON Web Token fallback mechanism from local storage
+                const token = localStorage.getItem("docappoint_token");
+
+                const res = await fetch(`${BACKEND_URL}/api/bookings?email=${currentUser.email}`, {
+                    credentials: "include", // Enforces cross-origin HTTP-Only cookie transfer (Vercel to Render)
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token && { "Authorization": `Bearer ${token}` }),
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setBookings(data.bookings || data);
+                } else {
+                    const err = await res.json();
+                    toast.error(err.message || "Failed to load bookings.");
+                }
+            } catch (error) {
+                console.error("Error fetching bookings:", error);
+                toast.error("Failed to load bookings from server.");
+            } finally {
+                setIsLoadingBookings(false);
+            }
+        };
+
+        if (!isPending && currentUser?.email) {
+            fetchUserBookings();
+        }
+    }, [currentUser, isPending]);
+
+    /**
+     * Network Action: Executes secure HTTP DELETE method.
+     * Dispatches operational entity payload targeting individual Document IDs in MongoDB.
+     */
     const handleConfirmDelete = async () => {
         if (!bookingToDelete) return;
         setIsSubmittingDelete(true);
 
         try {
-         
-            const res = await fetch(`http://localhost:5000/api/bookings/${bookingToDelete._id}`, {
+            const token = localStorage.getItem("docappoint_token");
+
+            const res = await fetch(`${BACKEND_URL}/api/bookings/${bookingToDelete._id}`, {
                 method: "DELETE",
-                credentials: "include"
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` }),
+                }
             });
             const result = await res.json();
 
             if (res.ok && result.success) {
-                toast.success("Appointment canceled and deleted successfully.");
+                toast.success("Appointment canceled successfully.");
+                // Optimistic UI update: Filter out state without demanding fresh network overhead
                 setBookings((prev) => prev.filter((item) => item._id !== bookingToDelete._id));
                 setIsDeleteModalOpen(false);
                 setBookingToDelete(null);
@@ -109,7 +135,9 @@ export default function DashboardPage() {
         }
     };
 
-    // Open Update Modal and Fill Existing Data
+    /**
+     * UI Action: Binds individual database row values directly onto the operational input form state.
+     */
     const openUpdateModal = (booking) => {
         setSelectedBooking(booking);
         setUpdateFormData({
@@ -121,27 +149,31 @@ export default function DashboardPage() {
         setIsUpdateModalOpen(true);
     };
 
-    // Handle Update Form Submission
+    /**
+     * Network Action: Transmits secure payload optimizations via upstream HTTP PATCH.
+     * Persists altered scheduling models safely to back-end controllers.
+     */
     const handleUpdateSubmit = async (e) => {
         e.preventDefault();
         setIsSubmittingUpdate(true);
 
         try {
-            
-            const res = await fetch(`http://localhost:5000/api/bookings/${selectedBooking._id}`, {
+            const token = localStorage.getItem("docappoint_token");
+
+            const res = await fetch(`${BACKEND_URL}/api/bookings/${selectedBooking._id}`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
                 credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { "Authorization": `Bearer ${token}` }),
+                },
                 body: JSON.stringify(updateFormData)
             });
             const result = await res.json();
 
             if (res.ok && result.success) {
                 toast.success("Appointment changes saved successfully.");
-                
-                // Update local UI state
+                // Sync state engine cleanly with backend confirmations dynamically
                 setBookings((prev) =>
                     prev.map((item) =>
                         item._id === selectedBooking._id
@@ -161,13 +193,17 @@ export default function DashboardPage() {
         }
     };
 
-    if (isPending || !session?.user) {
+    // Render Layer: Display centralized, animated medical loader while processing async session payloads
+    if (isPending) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#941865] border-t-transparent"></div>
             </div>
         );
     }
+
+    // Circuit breaker protecting page flashing for unauthorized requests
+    if (!session?.user) return null;
 
     return (
         <div className="w-full min-h-[70vh] px-4 py-10 md:px-6 bg-white">
@@ -177,6 +213,7 @@ export default function DashboardPage() {
                     Dashboard
                 </h2>
 
+                {/* Sub-Navigation/Tab Controllers Container */}
                 <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
                     <button
                         onClick={() => setActiveTab("bookings")}
@@ -205,7 +242,7 @@ export default function DashboardPage() {
                     </button>
                 </div>
 
-                {/* Tab Content */}
+                {/* Render view contents dynamically based on active dashboard view state */}
                 <div>
                     {activeTab === "bookings" ? (
                         isLoadingBookings ? (
@@ -220,6 +257,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                         ) : (
+                            /* Responsive Appointment Cards Layout Grid */
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {bookings.map((booking) => (
                                     <div 
@@ -230,7 +268,6 @@ export default function DashboardPage() {
                                             <h3 className="text-lg font-bold text-[#0f766e]">
                                                 {booking.doctorName}
                                             </h3>
-                                            
                                             <div className="space-y-2 text-xs md:text-sm text-gray-600">
                                                 <div className="flex items-center gap-2">
                                                     <FaUserAlt className="text-gray-400 shrink-0 text-xs" />
@@ -247,12 +284,13 @@ export default function DashboardPage() {
                                                 {booking.notes && (
                                                     <div className="flex items-start gap-2 pt-1 border-t border-gray-50 mt-1">
                                                         <FaNotesMedical className="text-gray-400 shrink-0 text-xs mt-0.5" />
-                                                        <span className="text-xs wrap-break-word">Reason: {booking.notes}</span>
+                                                        <span className="text-xs break-all">Reason: {booking.notes}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
+                                        {/* Row Modification Action Triggers */}
                                         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
                                             <button
                                                 onClick={() => openUpdateModal(booking)}
@@ -261,7 +299,10 @@ export default function DashboardPage() {
                                                 <FaEdit className="text-xs" /> Update
                                             </button>
                                             <button
-                                                onClick={() => openDeleteConfirmation(booking)}
+                                                onClick={() => {
+                                                    setBookingToDelete(booking);
+                                                    setIsDeleteModalOpen(true);
+                                                }}
                                                 className="cursor-pointer flex items-center justify-center gap-1.5 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 shadow-sm transition-all"
                                             >
                                                 <FaTrashAlt className="text-xs" /> Delete
@@ -275,10 +316,9 @@ export default function DashboardPage() {
                         <MyProfile user={session.user} />
                     )}
                 </div>
-
             </div>
 
-            {/* --- UPDATE MODAL --- */}
+            {/* Modal Overlay: Booking Record Patch Form Sequence */}
             {isUpdateModalOpen && selectedBooking && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm transition-all duration-300">
                     <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col my-5 max-h-[calc(100vh-40px)]">
@@ -298,7 +338,7 @@ export default function DashboardPage() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleUpdateSubmit} className="p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+                        <form onSubmit={handleUpdateSubmit} className="p-4 overflow-y-auto flex flex-col gap-4">
                             <div className="flex flex-col gap-0.5">
                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Doctor</label>
                                 <input
@@ -383,21 +423,19 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* --- DELETE CONFIRMATION MODAL --- */}
+            {/* Modal Overlay: Irreversible Row Deletion Confirmation Sequence */}
             {isDeleteModalOpen && bookingToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm transition-all duration-300">
-                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-6 flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-6 flex flex-col items-center text-center gap-4">
                         <div className="h-12 w-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 text-xl shrink-0">
                             <FaExclamationTriangle />
                         </div>
-                        
                         <div className="space-y-1">
                             <h3 className="text-base font-bold text-gray-900">Cancel Appointment?</h3>
                             <p className="text-xs text-gray-500 px-2">
                                 Are you sure you want to delete your booking with <span className="font-semibold text-gray-700">{bookingToDelete.doctorName}</span>? This operation cannot be undone.
                             </p>
                         </div>
-
                         <div className="grid grid-cols-2 gap-3 w-full mt-2">
                             <button
                                 type="button"
