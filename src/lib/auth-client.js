@@ -11,27 +11,56 @@ export const {
   useSession,
 } = authClient;
 
-// Backend থেকে JWT নিয়ে localStorage এ রাখার helper
+
+
+// JWT TOKEN STORE HELPER
 export async function fetchAndStoreToken(user) {
   try {
-    const res = await fetch("http://localhost:5000/jwt", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email, name: user.name }),
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/jwt`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.name,
+        }),
+      }
+    );
+
     const data = await res.json();
+
     if (data.success && data.token) {
-      localStorage.setItem("docappoint_token", data.token);
+      localStorage.setItem(
+        "docappoint_token",
+        data.token
+      );
     }
+
   } catch (err) {
     console.error("Token fetch failed:", err);
   }
 }
 
+
+
+// GET TOKEN
 export function getStoredToken() {
-  return localStorage.getItem("docappoint_token");
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("docappoint_token");
+  }
+  return null;
 }
 
+
+
+// CLEAR TOKEN
+
 export function clearStoredToken() {
-  localStorage.removeItem("docappoint_token");
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("docappoint_token");
+  }
 }
