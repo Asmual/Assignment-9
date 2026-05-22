@@ -70,7 +70,7 @@ export default function DashboardPage() {
                 const token = localStorage.getItem("docappoint_token");
 
                 const res = await fetch(`${BACKEND_URL}/api/bookings?email=${currentUser.email}`, {
-                    credentials: "include", // Enforces cross-origin HTTP-Only cookie transfer (Vercel to Render)
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                         ...(token && { "Authorization": `Bearer ${token}` }),

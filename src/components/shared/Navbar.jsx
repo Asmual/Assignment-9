@@ -31,9 +31,9 @@ export default function Navbar() {
             localStorage.setItem("docappoint_token", data.token);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     } else {
- 
+
       localStorage.removeItem("docappoint_token");
     }
   }, [user]);
@@ -75,6 +75,7 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
+        
 
         <div className="hidden md:flex items-center gap-4">
           {isPending ? (
@@ -103,6 +104,7 @@ export default function Navbar() {
             </div>
           )}
         </div>
+        
 
         <div className="flex md:hidden items-center gap-3">
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="focus:outline-none text-gray-700 hover:text-[#941865] transition-colors">

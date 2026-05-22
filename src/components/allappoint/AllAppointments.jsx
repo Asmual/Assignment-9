@@ -101,7 +101,7 @@ export default function AllAppointmentsClient() {
             placeholder="Search doctor by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#941865] bg-white transition-colors"
+            className="w-full pl-9 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:border-[#941865] bg-white transition-colors"
           />
           <FaSearch className="absolute left-3 top-3 text-gray-400 text-xs" />
         </div>
@@ -111,7 +111,7 @@ export default function AllAppointmentsClient() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border border-gray-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#941865] cursor-pointer text-gray-700 w-full sm:w-48"
+            className="border border-gray-400 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#941865] cursor-pointer text-gray-700 w-full sm:w-48"
           >
             <option value="">Default/No Sorting</option>
             <option value="fee-low-to-high">Fee: Low to High</option>
